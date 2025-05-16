@@ -966,6 +966,16 @@ class DesignspaceEditorController(Subscriber, WindowController, BaseNotification
                     imageObject=symbolImage("arrow.right.filled.filter.arrow.right", (1, 0, 1, 1))
                     )
                 )
+
+        if self.hasLongboardSupport:
+            otherExtensions.append(
+                dict(
+                    itemIdentifier="longboard",
+                    label="Longboard",
+                    callback=self.toolbarLongboard,
+                    imageObject=symbolImage("skateboard.fill", (1,0,1,1))
+                    )
+                )
         if otherExtensions:
             toolbarItems.append(dict(itemIdentifier=AppKit.NSToolbarSpaceItemIdentifier))
 
@@ -1014,6 +1024,8 @@ class DesignspaceEditorController(Subscriber, WindowController, BaseNotification
             items["batch"].setVisibilityPriority_(AppKit.NSToolbarItemVisibilityPriorityLow)
         if "prepolator" in items:
             items["prepolator"].setVisibilityPriority_(AppKit.NSToolbarItemVisibilityPriorityLow)
+        if "longboard" in items:
+            items["longboard"].setVisibilityPriority_(AppKit.NSToolbarItemVisibilityPriorityLow)
 
 
         # AXES
@@ -1299,6 +1311,14 @@ class DesignspaceEditorController(Subscriber, WindowController, BaseNotification
     def hasBatchSupport(self):
         try:
             import batch
+            return True
+        except ImportError:
+            return False
+
+    @property
+    def hasLongboardSupport(self):
+        try:
+            import longboard
             return True
         except ImportError:
             return False
@@ -2076,6 +2096,11 @@ class DesignspaceEditorController(Subscriber, WindowController, BaseNotification
         import batch
         if self.operator.path:
             batch.BatchController([self.operator.path])
+
+    def toolbarLongboard(self, sender):
+        import longboard
+        if self.operator:
+            longboard.launcher()
 
     def toolbarSelectTab(self, sender):
         selectedTab = sender.label()
